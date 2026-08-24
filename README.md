@@ -12,7 +12,7 @@ not a full copy of the pipeline.
 
 **`quantize_and_benchmark.py`**: a PyTorch pipeline built from scratch that pulls trained weights out of Telemanom's saved Keras .h5 models, rebuilds the same LSTM architecture in PyTorch, applies post-training dynamic INT8 quantization, and benchmarks FP32 vs. INT8 model size, inference speed, and prediction agreement. 
 
-## LSTM Structure
+## Telemanom GitHub Repository 
 
 The unmodified Telemanom codebase (Hundman et al., 2018), available at
 [khundman/telemanom](https://github.com/khundman/telemanom)
