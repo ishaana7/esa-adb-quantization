@@ -20,7 +20,6 @@ else:
 mission_path = Path("/Users/ishaanagarwal/Downloads/ESA-Mission1")
 l_s = 250  # must match Telemanom's training sequence length
 
-# 46 was a separate training run
 run_map = {
     41: '2026-07-19_09.02.16',
     42: '2026-07-19_09.02.16',
@@ -35,7 +34,7 @@ class TelemanoMLSTM(nn.Module):
     """
     Mirrors Telemanom's Keras architecture: two LSTM layers of 80 units,
     one dense output. Same shape means the trained Keras weights can be
-    loaded directly, no retraining needed.
+    loaded directly, without retraining.
     """
     def __init__(self):
         super().__init__()
@@ -283,7 +282,7 @@ for ch_num, run_id in run_map.items():
         })
 
     except Exception as e:
-        # skip a bad channel instead of killing the whole run
+        # skip a bad channel instead of stopping the whole run
         print(f"error: {e}")
         import traceback
         traceback.print_exc()
