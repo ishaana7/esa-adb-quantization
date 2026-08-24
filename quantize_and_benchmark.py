@@ -45,7 +45,7 @@ class TelemanoMLSTM(nn.Module):
     def forward(self, x):
         out, _ = self.lstm1(x)
         out, _ = self.lstm2(out)
-        out = self.fc(out[:, -1, :])  # only the last timestep matters here
+        out = self.fc(out[:, -1, :])  
         return out
 
 
@@ -90,7 +90,7 @@ def find_lstm_weights(f, lstm_num):
 
 def find_dense_weights(f):
     """
-    Same idea as find_lstm_weights for the dense layer. Tries common
+    Same idea as find_lstm_weights for the dense layer: tries common
     Keras/TF naming patterns first, falls back to a broader search if none
     hit.
     """
@@ -124,7 +124,7 @@ def convert_lstm_weights(kernel, rec_kernel, bias, pytorch_lstm):
     Keras and PyTorch store LSTM weights differently. Keras orients
     weights one way, PyTorch expects the opposite, hence the transpose.
     Bias also differs: Keras uses one vector per gate, PyTorch splits it
-    into two that get summed internally, so the full bias goes into one
+    into two that get summed internally, so the full bias goes into one, 
     and the other gets zeroed to match. Gate order (input, forget, cell,
     output) is the same in both, so no reordering needed.
     """
@@ -174,12 +174,9 @@ def load_scaled_test_values(ch):
     normalized each channel to [-1, 1] using the full channel's min/max
     before splitting into train/test, so reusing data/test/<ch>.npy
     guarantees the same distribution the model was trained and tested on.
-    Recomputing scaling here would put inputs on a scale the model never
-    saw.
     """
     test_path = Path('data') / 'test' / f'{ch}.npy'
     test_arr = np.load(test_path)
-    # telemetry value is the first feature per Telemanom's convention
     return test_arr[:, 0].astype(np.float32)
 
 
@@ -204,7 +201,6 @@ for ch_num, run_id in run_map.items():
         scaled = load_scaled_test_values(ch)
 
         # zero-copy windows instead of duplicating every slice,
-        # matters at 7M+ points per channel
         all_windows = sliding_window_view(scaled, l_s)
 
         total_possible = len(scaled) - l_s
@@ -241,7 +237,7 @@ for ch_num, run_id in run_map.items():
         del model_fp32
         gc.collect()
 
-        # int8 pass, same windows
+        # int8 pass; same windows
         t0 = time.perf_counter()
         for start in range(0, len(idx), chunk_size):
             chunk_idx = idx[start:start+chunk_size]
@@ -261,7 +257,7 @@ for ch_num, run_id in run_map.items():
         del scaled, all_windows, model_int8, idx
         gc.collect()
 
-        # mae between fp32 and int8 predictions, not accuracy against real telemetry
+        # mae between fp32 and int8 predictions
         mae = np.mean(np.abs(fp32_preds - int8_preds))
         speedup = round(fp32_time / int8_time, 1)
         print(f"speedup: {speedup}x  |  mae: {mae:.8f}")
